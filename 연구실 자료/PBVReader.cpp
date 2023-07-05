@@ -913,9 +913,9 @@ tuple< vector<Matrix<double50, -1, -1>>, vector<MatrixXi>, RowVectorXi, MatrixXd
 
     MatrixXi NodeEnds = Node_Place(nE, all);
 
-    int kN, jN, iNj = 0;
+    int kN, jN, iNj = 0;    
     bool check1;
-    vector<RowVectorXd> belem;
+    vector<RowVectorXd> belem; // 여기에 빔 한개 일시저장하여 beam에 넘겨서 저장
     MatrixXd beam1, pnt1(2, 3);
     vector<MatrixXd> beam, beamcoord;
     vector<int> csnum1;
@@ -942,7 +942,7 @@ tuple< vector<Matrix<double50, -1, -1>>, vector<MatrixXi>, RowVectorXi, MatrixXd
                     }
                     if (kN == HO_Joints(j, 3))
                     {
-                        besz(j, 4) = beam.size();
+                        besz(j, 4) = beam.size(); // 이친구의 정확한 느낌?
                         besz(j, 5) = HO_Joints(j, 4) - 1;
                     }
                 }
@@ -984,7 +984,7 @@ tuple< vector<Matrix<double50, -1, -1>>, vector<MatrixXi>, RowVectorXi, MatrixXd
             if (csnum1[i] == CSMandM[j](0))
                 csnum(i) = j;
     }
-
+        
     Cross_Section csLA;
     int b1, b2, e1, e2;
     RowVectorXd p11, p12, p21, p22;
@@ -993,7 +993,7 @@ tuple< vector<Matrix<double50, -1, -1>>, vector<MatrixXi>, RowVectorXi, MatrixXd
     {
         b1 = besz(i, 0), b2 = besz(i, 4);
         e1 = besz(i, 1), e2 = besz(i, 5);
-        besz(i, 2) = double(csLA.EdgeLength(csc[csnum(b1)], cscc[csnum(b1)])(e1)) * HO_Joints(i, 2);
+        besz(i, 2) = double(csLA.EdgeLength(csc[csnum(b1)], cscc[csnum(b1)])(e1)) * HO_Joints(i, 2);  //csc = 모양에 따른 좌표
         besz(i, 6) = double(csLA.EdgeLength(csc[csnum(b2)], cscc[csnum(b2)])(e2)) * HO_Joints(i, 5);
 
         p11 = beamcoord[b1](0, all);
@@ -1040,8 +1040,8 @@ tuple< vector<Matrix<double50, -1, -1>>, vector<MatrixXi>, RowVectorXi, MatrixXd
     for (int i = 0; i < beam.size(); i++)
     {
         ydir = beam[i](0, { 4, 5, 6 });
-        nd1 = beam[i](0, 2);
-        nd2 = beam[i](beam[i].rows() - 1, 3);
+        nd1 = beam[i](0, 2); // 시작
+        nd2 = beam[i](beam[i].rows() - 1, 3); // 끝
         for (int j = 0; j < HO_Nodes.rows(); j++)
         {
             if (nd1 == HO_Nodes(j, 0))
@@ -1096,7 +1096,7 @@ tuple< vector<Matrix<double50, -1, -1>>, vector<MatrixXi>, RowVectorXi, MatrixXd
                 zcoordi(j + 1) = sqrt(pow(zi(0), 2) + pow(zi(1), 2) + pow(zi(2), 2));
             }
         }
-        zcoord.push_back(zcoordi);
+        zcoord.push_back(zcoordi); ?
     }
 
     bbns.setZero(Bbns.size(), 3);
