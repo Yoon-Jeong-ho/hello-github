@@ -813,6 +813,10 @@ int main() {
     }
     for(int i = 0 ; i <csnum1.size();++i)
     cout<<"csnum1 "<<i<< " = "<<csnum1[i]<<endl<<endl;
+    for(int i = 0 ; i <cscc.size();++i)
+    cout<<"cscc "<<i<< " = "<<cscc[i]<<endl<<endl;
+    for(int i = 0 ; i <csc.size();++i)
+    cout<<"csc "<<i<< " = "<<csc[i]<<endl<<endl;
 
 
     for(int i = 0 ; i <beamcoord.size();++i)
@@ -991,6 +995,16 @@ int main() {
             shi.push_back(i);
         }
     }
+    for(int i = 0 ; i <bni.size();++i)
+    cout<<"bni"<<i<< " = "<<bni[i]<<endl<<endl;
+    for(int i = 0 ; i <bci.size();++i)
+    cout<<"bci"<<i<< " = "<<bci[i]<<endl<<endl;
+    for(int i = 0 ; i <sni.size();++i)
+    cout<<"sni"<<i<< " = "<<sni[i]<<endl<<endl;
+    for(int i = 0 ; i <shi.size();++i)
+    cout<<"shi"<<i<< " = "<<shi[i]<<endl<<endl;
+    for(int i = 0 ; i <BoundCs.size();++i)
+    cout<<"BoundCs"<<i<< " = "<<BoundCs[i]<<endl<<endl;
 
 
     FNode.setZero(fcs.size(), 5);
@@ -1013,6 +1027,8 @@ int main() {
             fei++;
         }
     }
+    cout<<"FEdge"<<"="<<FEdge<<endl<<endl ;
+    cout<<"FNode"<<"="<<FNode<<endl<<endl ;
 
     HO_BCs.setZero(bci.size(), 5);
     for (int i = 0; i < bci.size(); i++)
@@ -1021,7 +1037,7 @@ int main() {
         HO_BCs(i, { 1,2 }) = bci[i];
         HO_BCs(i, { 3,4 }) = BoundCs[i]({ 1,2 });
     }
-
+    cout<<"HO_BCs"<<" = " <<HO_BCs<<endl<<endl ;
     MatrixXd HO_SBCs;
     HO_SBCs.setZero(shi.size(), 4);
     for (int i = 0; i < shi.size(); i++)
@@ -1030,23 +1046,34 @@ int main() {
         HO_SBCs(i, 1) = sni[i];
         HO_SBCs(i, { 2,3 }) = BoundCs[shi[i]]({ 1,2 });
     }
-
+    cout<<"HO_SBCs"<<" = " <<HO_SBCs<<endl<<endl ;
     VectorXi Nel, Nn; Nel.setZero(zcoord.size());
     for (int i = 0; i < zcoord.size(); i++)
         Nel(i) = zcoord[i].size() - 1;
     Nn = Nel + VectorXi::Ones(Nel.size());
 
+    cout<<"Nel"<<" = " <<Nel<<endl<<endl ;
+    cout<<"Nn"<<" = " <<Nn<<endl<<endl ;
+
     vector<RowVector3d> pnts1;
     for (int i = 0; i < pnts.rows(); i++)
         pnts1.push_back(pnts(i, all));
+
+    for(int i = 0 ; i <pnts1.size();++i)
+    cout<<"pnts1"<<i<< " = "<<pnts1[i]<<endl<<endl;
 
     std::sort(pnts1.begin(), pnts1.end(), [](Eigen::RowVectorXd const& t1, Eigen::RowVectorXd const& t2) { return t1(0) < t2(0); });
     auto it = std::unique(pnts1.begin(), pnts1.end());
     pnts1.resize(std::distance(pnts1.begin(), it));
 
+    for(int i = 0 ; i <pnts1.size();++i)
+    cout<<"pnts1"<<i<< " = "<<pnts1[i]<<endl<<endl;
+
     MatrixXd pnt_s(pnts1.size(), 3);
     for (int i = 0; i < pnts1.size(); i++)
         pnt_s(i, all) = pnts1[i];
+
+    cout<<"pnt_s"<<" = " <<pnt_s<<endl<<endl ;
 
     if(units == "millimeters")
     {
@@ -1070,6 +1097,9 @@ int main() {
                     pnt_con_s(i, 1) = j;
             }
     }
+    for(int i = 0 ; i <beamcoord.size();++i)
+    cout<<"beamcoord"<<i<< " = "<<beamcoord[i]<<endl<<endl;
+    cout<<"pnt_con_s"<<" = " <<pnt_con_s<<endl<<endl ;
 
     in.close();
 

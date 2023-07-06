@@ -943,7 +943,7 @@ tuple< vector<Matrix<double50, -1, -1>>, vector<MatrixXi>, RowVectorXi, MatrixXd
                     if (kN == HO_Joints(j, 3))
                     {
                         besz(j, 4) = beam.size(); // 이친구의 정확한 느낌?
-                        besz(j, 5) = HO_Joints(j, 4) - 1;
+                        besz(j, 5) = HO_Joints(j, 4) - 1; //
                     }
                 }
                 if (kN == HO_Elements(i, 2))
@@ -993,9 +993,9 @@ tuple< vector<Matrix<double50, -1, -1>>, vector<MatrixXi>, RowVectorXi, MatrixXd
     {
         b1 = besz(i, 0), b2 = besz(i, 4);
         e1 = besz(i, 1), e2 = besz(i, 5);
-        besz(i, 2) = double(csLA.EdgeLength(csc[csnum(b1)], cscc[csnum(b1)])(e1)) * HO_Joints(i, 2);  //csc = 모양에 따른 좌표
-        besz(i, 6) = double(csLA.EdgeLength(csc[csnum(b2)], cscc[csnum(b2)])(e2)) * HO_Joints(i, 5);
-
+        besz(i, 2) = double(csLA.EdgeLength(csc[csnum(b1)], cscc[csnum(b1)])(e1)) * HO_Joints(i, 2);  //csc = 모양에 따른 좌표  
+        besz(i, 6) = double(csLA.EdgeLength(csc[csnum(b2)], cscc[csnum(b2)])(e2)) * HO_Joints(i, 5);   // cscc순서
+        //besz ( -1, 8)  빔 넘버, 엣지넘버 , 길이, z길이 
         p11 = beamcoord[b1](0, all);
         for (int j = 0; j < HO_Nodes.rows(); j++)
             if (HO_Joints(i, 0) == HO_Nodes(j, 0))
@@ -1096,7 +1096,7 @@ tuple< vector<Matrix<double50, -1, -1>>, vector<MatrixXi>, RowVectorXi, MatrixXd
                 zcoordi(j + 1) = sqrt(pow(zi(0), 2) + pow(zi(1), 2) + pow(zi(2), 2));
             }
         }
-        zcoord.push_back(zcoordi); ?
+        zcoord.push_back(zcoordi);// ?
     }
 
     bbns.setZero(Bbns.size(), 3);
@@ -1206,7 +1206,7 @@ tuple< vector<Matrix<double50, -1, -1>>, vector<MatrixXi>, RowVectorXi, MatrixXd
     for (int i = 0; i < pnts.rows(); i++)
         pnts1.push_back(pnts(i, all));
 
-    std::sort(pnts1.begin(), pnts1.end(), [](Eigen::RowVectorXd const& t1, Eigen::RowVectorXd const& t2) { return t1(0) < t2(0); });
+    std::sort(pnts1.begin(), pnts1.end(), [](Eigen::RowVectorXd const& t1, Eigen::RowVectorXd const& t2) { return t1(0) < t2(0); }); // pnts1 낮은 차순 정리
     auto it = std::unique(pnts1.begin(), pnts1.end());
     pnts1.resize(std::distance(pnts1.begin(), it));
 
