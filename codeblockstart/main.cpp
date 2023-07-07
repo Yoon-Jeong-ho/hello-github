@@ -319,9 +319,48 @@ int main() {
                 csType << csnumi + 1, sectype[csnumi], csdim, csthick;
                 dim.push_back(csType);
                 nw1.push_back(1);
+                cout <<dim[0]<<endl<<endl;
+                cout << csType;
             }
+            else if (tp.find("USER") != string::npos)
+            {
+                sectype.push_back(2); // 2 means User Defined cross section
+                UCross1.clear();
+                getline(in, tp); si++;
+                while (tp.length() > 1)
+                {
+                    UCross1.push_back(dimensions.UserCross(tp));
+                    getline(in, tp); si++;
+                }
+                UCross2.setZero(UCross1.size(), 4);
+                for (int i = 0; i < UCross1.size(); i++)
+                    UCross2(i, all) = UCross1[i]({ 0,1,2,3 });
+                UserCross.push_back(UCross2);
+                usthick.push_back(UCross1[0](4));
+                nw1.push_back(1);
+            }
+            else if (tp.find("CHAMFER") != string::npos)
+            {
+                sectype.push_back(3); // 3 means CHAMFERED cross section
+                getline(in, tp); si++;
+                csdimch(0) = dimensions.EdgeLandT(tp)(0); // Extracting Edge Length and Thickness
+                getline(in, tp); si++;
+                csdimch(1) = dimensions.EdgeLandT(tp)(0);
+                getline(in, tp); si++;
+                csdimch(2) = dimensions.EdgeLandT(tp)(0);
+                csthick = dimensions.EdgeLandT(tp)(1);
+                csTypei << csnumi + 1, sectype[csnumi], csdimch, csthick;
+                dim.push_back(csTypei);
+                nw1.push_back(1);
+            }
+            csnumi++;
         }
-        if (str == "*HO_JOINT")
+        else if (str.substr(0,12) == "*HO_ANALYSIS")
+        {
+            getline(in, tp); si++;
+            analysis = tp;
+        }
+        else if (str == "*HO_JOINT")
         {
             getline(in, str);
             getline(in, str);
@@ -481,11 +520,11 @@ int main() {
 
     if (dim.size() > 0)
         unitcheck = abs(dim[0](2));
-
+    cout <<"unitcheck"<<unitcheck<<endl<<endl;
 
     if (unitcheck > 1)
     {
-        units = "millimeters"; // 왜 미리미터 일까?
+        units = "millimeters";
         for (int se = 0; se < sectype.size(); se++)
         {
             if (sectype[se] == 0 || sectype[se] == 1)
@@ -802,8 +841,7 @@ int main() {
         }
         iNj++;
     }
-    for(int i = 0 ; i <CSMandM.size();++i)
-    cout<<"CSMandM "<<i<< " = "<<CSMandM[i]<<endl<<endl;
+
     RowVectorXi csnum(csnum1.size());
     for (int i = 0; i < csnum1.size(); i++)
     {
@@ -811,23 +849,11 @@ int main() {
             if (csnum1[i] == CSMandM[j](0))
                 csnum(i) = j;
     }
-    for(int i = 0 ; i <csnum1.size();++i)
-    cout<<"csnum1 "<<i<< " = "<<csnum1[i]<<endl<<endl;
-    for(int i = 0 ; i <cscc.size();++i)
-    cout<<"cscc "<<i<< " = "<<cscc[i]<<endl<<endl;
-    for(int i = 0 ; i <csc.size();++i)
-    cout<<"csc "<<i<< " = "<<csc[i]<<endl<<endl;
-
-
-    for(int i = 0 ; i <beamcoord.size();++i)
-    cout<<"beamcoord "<<i<< " = "<<beamcoord[i]<<endl<<endl;
 
     Cross_Section csLA;
     int b1, b2, e1, e2;
     RowVectorXd p11, p12, p21, p22;
-    cout<<"besz"<<"="<<besz<<endl<<endl ;
-    cout<<"csnum ="<<csnum<<endl<<endl;
-    cout<<"HO_Joints="<<HO_Joints<<endl<<endl;
+
 
     for (int i = 0; i < besz.rows(); i++)
     {
@@ -857,7 +883,6 @@ int main() {
         else
             besz(i, 7) = (p22 - p21).norm();
     }
-    cout<<"besz"<<"="<<besz<<endl<<endl ;
     MatrixXd xdir(beam.size(), 3), pnts(beam.size() * 2, 3), bbns;
     MatrixXi pnt_con_s(beam.size(), 2);
     xdir.setZero(), pnts.setZero();
@@ -866,8 +891,7 @@ int main() {
     VectorXd zcoordi;
     vector<VectorXd> zcoord;
     double nd1, nd2;
-    for(int i = 0 ; i <beam.size();++i)
-    cout<<"beam"<<i<< " = "<<beam[i]<<endl<<endl;
+
 
     for (int i = 0; i < beam.size(); i++)
     {
@@ -885,14 +909,10 @@ int main() {
         if(units == "millimeters")
         {
             zi = (p12 - p11) / 1000;
-            cout<<"zi"<<"= "<<zi<<endl<<endl ;
             zdir = zi / zi.norm();
-            cout<<"zi.norm= "<<zi.norm()<<endl<<endl ;
-            cout<<"zdir"<<"= "<<zdir<<endl<<endl ;
             xdir(i, all) = ydir.cross(zdir);
-            cout<<"xdir"<<"= "<<xdir<<endl<<endl ;
             pnts({ 2 * i, 2 * i + 1 }, all) = beamcoord[i] / 1000;
-            cout<<"pnts"<<"= "<<pnts<<endl<<endl ;
+
         }
         else
         {
@@ -916,7 +936,7 @@ int main() {
                 if (nd2 == HO_Nodes(k, 0))
                     p12 = HO_Nodes(k, { 1, 2, 3 });
 
-            for (int k = 0; k < ShellJoints.rows(); k++)
+            for (int k = 0; k < ShellJoints.rows(); k++) // 이게 날아갔네
                 if (nd2 == ShellJoints(k, 0))
                     Bbns.push_back({ double(i), double(j + 1), ShellJoints(k, 1) });
                 else if (nd2 == ShellJoints(k, 1))
@@ -935,8 +955,6 @@ int main() {
         }
         zcoord.push_back(zcoordi);
     }
-    for(int i = 0 ; i <zcoord.size();++i)
-    cout<<"zcoord"<<i<< " = "<<zcoord[i]<<endl<<endl;
     bbns.setZero(Bbns.size(), 3);
     for (int i = 0; i < Bbns.size(); i++)
         bbns(i, all) = Bbns[i];
@@ -964,7 +982,7 @@ int main() {
                     }
                 }
             }
-        else
+        else // 이것도 날라가쎈
             bni.push_back({ -1,Forces[i](0) });
 
     }
@@ -995,24 +1013,12 @@ int main() {
             shi.push_back(i);
         }
     }
-    for(int i = 0 ; i <bni.size();++i)
-    cout<<"bni"<<i<< " = "<<bni[i]<<endl<<endl;
-    for(int i = 0 ; i <bci.size();++i)
-    cout<<"bci"<<i<< " = "<<bci[i]<<endl<<endl;
-    for(int i = 0 ; i <sni.size();++i)
-    cout<<"sni"<<i<< " = "<<sni[i]<<endl<<endl;
-    for(int i = 0 ; i <shi.size();++i)
-    cout<<"shi"<<i<< " = "<<shi[i]<<endl<<endl;
-    for(int i = 0 ; i <BoundCs.size();++i)
-    cout<<"BoundCs"<<i<< " = "<<BoundCs[i]<<endl<<endl;
-
 
     FNode.setZero(fcs.size(), 5);
     FEdge.setZero(Forces.size() - fcs.size(), 6);
     int fni = 0, fei = 0;
     for (int i = 0; i < Forces.size(); i++)
     {
-        cout << Forces[i] << endl << endl;
         if (Forces[i].size() == 3)
         {
             FNode(fni, 0) = fcs[fni];
@@ -1027,9 +1033,6 @@ int main() {
             fei++;
         }
     }
-    cout<<"FEdge"<<"="<<FEdge<<endl<<endl ;
-    cout<<"FNode"<<"="<<FNode<<endl<<endl ;
-
     HO_BCs.setZero(bci.size(), 5);
     for (int i = 0; i < bci.size(); i++)
     {
@@ -1037,7 +1040,6 @@ int main() {
         HO_BCs(i, { 1,2 }) = bci[i];
         HO_BCs(i, { 3,4 }) = BoundCs[i]({ 1,2 });
     }
-    cout<<"HO_BCs"<<" = " <<HO_BCs<<endl<<endl ;
     MatrixXd HO_SBCs;
     HO_SBCs.setZero(shi.size(), 4);
     for (int i = 0; i < shi.size(); i++)
@@ -1046,34 +1048,27 @@ int main() {
         HO_SBCs(i, 1) = sni[i];
         HO_SBCs(i, { 2,3 }) = BoundCs[shi[i]]({ 1,2 });
     }
-    cout<<"HO_SBCs"<<" = " <<HO_SBCs<<endl<<endl ;
     VectorXi Nel, Nn; Nel.setZero(zcoord.size());
     for (int i = 0; i < zcoord.size(); i++)
         Nel(i) = zcoord[i].size() - 1;
     Nn = Nel + VectorXi::Ones(Nel.size());
 
-    cout<<"Nel"<<" = " <<Nel<<endl<<endl ;
-    cout<<"Nn"<<" = " <<Nn<<endl<<endl ;
-
     vector<RowVector3d> pnts1;
     for (int i = 0; i < pnts.rows(); i++)
         pnts1.push_back(pnts(i, all));
 
-    for(int i = 0 ; i <pnts1.size();++i)
-    cout<<"pnts1"<<i<< " = "<<pnts1[i]<<endl<<endl;
 
     std::sort(pnts1.begin(), pnts1.end(), [](Eigen::RowVectorXd const& t1, Eigen::RowVectorXd const& t2) { return t1(0) < t2(0); });
     auto it = std::unique(pnts1.begin(), pnts1.end());
     pnts1.resize(std::distance(pnts1.begin(), it));
 
-    for(int i = 0 ; i <pnts1.size();++i)
-    cout<<"pnts1"<<i<< " = "<<pnts1[i]<<endl<<endl;
+
 
     MatrixXd pnt_s(pnts1.size(), 3);
     for (int i = 0; i < pnts1.size(); i++)
         pnt_s(i, all) = pnts1[i];
 
-    cout<<"pnt_s"<<" = " <<pnt_s<<endl<<endl ;
+
 
     if(units == "millimeters")
     {
@@ -1098,10 +1093,35 @@ int main() {
             }
     }
     for(int i = 0 ; i <beamcoord.size();++i)
-    cout<<"beamcoord"<<i<< " = "<<beamcoord[i]<<endl<<endl;
-    cout<<"pnt_con_s"<<" = " <<pnt_con_s<<endl<<endl ;
 
     in.close();
+
+
+    for(int i = 0 ; i <csc.size() ; ++i)
+    cout << "csc["<<i<<"] =\n" <<csc[i] << endl<<endl;//
+    for(int i = 0 ; i <cscc.size() ; ++i)
+    cout << "cscc["<<i<<"] =\n"<<cscc[i]<<endl<<endl;
+    cout<<"csnum =\n"<< csnum<<endl<<endl;
+    cout<<"xdir=\n"<< xdir<<"\n\n";
+    cout<< "pnt_s =\n"<< pnt_s<<endl<<endl;
+    cout<< "pnt_con_s =\n"<<pnt_con_s<<endl<<endl;
+    cout<< "besz =\n"<<besz<<endl<<endl;
+    cout<< "thick =\n"<<thick<<endl<<endl;
+    cout<< "ModenMat =\n"<<ModenMat<<endl<<endl;
+    cout<< "HO_Materials =\n"<<HO_Materials<<endl<<endl;
+    cout<< "FNode =\n"<<FNode<<endl<<endl;
+    cout<< "FEdge =\n"<<FEdge<<endl<<endl;
+    cout<< "HO_BCs =\n"<<HO_BCs<<endl<<endl;
+    for(int i = 0 ; i <zcoord.size() ; ++i)
+    cout << "zcoord["<<i<<"] =\n" <<zcoord[i]<<endl<<endl;
+    cout<< "Nel =\n"<<Nel<<endl<<endl;
+    cout<< "Nn =\n"<<Nn<<endl<<endl;
+    cout<< "analysis =\n"<<analysis<<endl<<endl;
+    cout<< "freq =\n"<<freq<<endl<<endl;
+    cout<< "NW1 =\n"<<NW1<<endl<<endl;
+    cout<< "FRF =\n"<<FRF<<endl<<endl;
+    cout<< "units =\n"<<units<<endl<<endl;
+
 
 	return 0;
 }
