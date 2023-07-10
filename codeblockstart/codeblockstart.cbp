@@ -32,8 +32,32 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="BeamBCs.h" />
+		<Unit filename="BeamNodeDof.h" />
+		<Unit filename="Calculus.h" />
+		<Unit filename="Center.h" />
+		<Unit filename="Continuity.h" />
+		<Unit filename="DOF.h" />
+		<Unit filename="Deformed.h" />
+		<Unit filename="Edge.h" />
+		<Unit filename="EigenSolver.h" />
+		<Unit filename="Force.h" />
+		<Unit filename="Hermite.h" />
+		<Unit filename="HigherOrderBeamLib.h" />
+		<Unit filename="Inertia.h" />
+		<Unit filename="JointConstraint.h" />
+		<Unit filename="LGQ.h" />
+		<Unit filename="LinearAlgebra.h" />
 		<Unit filename="Modegen.cpp" />
+		<Unit filename="NodalResults.h" />
+		<Unit filename="Order.h" />
+		<Unit filename="PSI.h" />
+		<Unit filename="Probtune.h" />
+		<Unit filename="ScaleFactor.h" />
+		<Unit filename="Stress.h" />
+		<Unit filename="Sysmat.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="nDirectional.h" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

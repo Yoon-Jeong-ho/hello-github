@@ -1,3 +1,20 @@
+#define _USE_MATH_DEFINES
+//#define PETSC_USE_COMPLEX
+
+#include "HigherOrderBeamLib.h"
+#include "Sysmat.h"
+#include "JointConstraint.h"
+#include "Deformed.h"
+#include "BeamBCs.h"
+#include "Stress.h"
+#include "Force.h"
+#include "BeamNodeDof.h"
+#include "NodalResults.h"
+#include "EigenSolver.h"
+#include <Eigen/Dense>
+#include <Eigen/Core>
+#include <math.h>
+#include <future>
 #include<fstream>
 #include<iostream>
 #include<string>
@@ -1162,6 +1179,29 @@ int main() {
     vector<vector<MatrixXd>> coef_s, coef_n, coef_z;
     vector<MatrixXi> settab;
     MatrixXi modeNo(csc.size(), 4);
+
+    auto start1 = high_resolution_clock::now();
+    for (int i = 0;i < csc.size();i++)
+    {
+        //cout << "Cross_Section no.:  " << i << endl << endl;
+        csc_i = csc[i];
+        cscc_i = cscc[i];
+        settab_i.setZero(Mset(i) + 1, 3);
+        tie(coef_s_i, coef_n_i, coef_z_i, settab_i) = Modegen(csc_i, cscc_i, Mset(i), settab_i); // Mset(i) for diiferent mode sets for different crosssections
+        settab_i(1, 0) += 2;
+        modeNo(i, all) << i, coef_s_i[0].cols(), coef_n_i[0].cols(), coef_z_i[0].cols();
+        coef_s.push_back(coef_s_i);
+        coef_n.push_back(coef_n_i);
+        coef_z.push_back(coef_z_i);
+        settab.push_back(settab_i);
+    }
+
+    auto stop1 = high_resolution_clock::now();
+    auto duration1 = duration_cast<microseconds>(stop1 - start1);
+
+    cout << "Cross-sectional Modes Derived!!" << endl << endl;
+
+
 
 	return 0;
 }
