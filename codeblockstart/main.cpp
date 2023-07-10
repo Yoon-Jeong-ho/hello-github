@@ -1122,6 +1122,46 @@ int main() {
     cout<< "FRF =\n"<<FRF<<endl<<endl;
     cout<< "units =\n"<<units<<endl<<endl;
 
+    cout << "-------------------------------------------------------------------------------\n\n\n\n\n";
+    int freqn = freq,un;
+
+    if (freqn == 0)
+        freqn = 20;
+
+    if (units == "millimeters")
+        un = 1000;
+    else
+        un = 1;
+    RowVectorXi csnum_s = csnum;
+
+    MatrixXd enr_s(csnum_s.size(), 3);
+    VectorXd t_s(csnum_s.size());
+    for (int i = 0; i < csnum_s.size(); i++)
+    {
+        t_s(i) = thick(csnum_s(i));
+        for (int j = 0; j < HO_Materials.rows(); j++)
+            if (ModenMat(csnum_s(i), 1) + 1 == HO_Materials(j, 0))
+                enr_s(i, all) = HO_Materials(j, { 1,2,3 });
+    }
+    cout<< "t_s\n "<<t_s <<endl<<endl;
+    cout<< "enr_s\n"<< enr_s<<endl <<endl;
+    VectorXi Mset(ModenMat.rows());
+    for (int i = 0; i < ModenMat.rows(); i++)
+    {
+        if (ModenMat(i, 2) == 0)
+            Mset(i) = 2;
+        else
+            Mset(i) = ModenMat(i, 2);
+    }
+    cout << "Mset\n" << Mset<<endl<<endl;
+    Matrix<double50, -1, -1> csc_i, cR, cT;
+    MatrixXi cscc_i, settab_i;
+    Array<double50, -1, 1> alpha, Le;
+    double50 betaR, betaT;
+    vector<MatrixXd> coef_s_i, coef_n_i, coef_z_i;
+    vector<vector<MatrixXd>> coef_s, coef_n, coef_z;
+    vector<MatrixXi> settab;
+    MatrixXi modeNo(csc.size(), 4);
 
 	return 0;
 }
