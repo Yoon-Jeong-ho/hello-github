@@ -1,22 +1,3 @@
-#include <iostream>
-#include<string>
-
-
-using namespace std;
-
-int main()
-{
-    string str;
-    int result = 1;
-    getline(cin,str);
-    if(str.length()==1 && str[0]==' '){
-        cout<<0;
-        return 0;
-    }
-
-    for(int i = 1 ; i < str.length() ; i++){
-        if(str[i]==' ')result++;
-    }
-    cout<<result;
-    return 0;
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:4732310f2f91c1dc0826295f1bda8f1c5792d070977590ffea2804d49e050b90
+size 332
