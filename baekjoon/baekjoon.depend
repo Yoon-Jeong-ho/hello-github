@@ -1,5 +1,3 @@
-# depslib dependency file v1.0
-1688717707 source:c:\users\aa007\onedrive\¹®¼­\hello-github\baekjoon\main.cpp
-	<iostream>
-	<string>
-
+version https://git-lfs.github.com/spec/v1
+oid sha256:0cdce24adf5085de71954a0efb8bf7ec08b430fbec44b0b93abe6797060400cc
+size 147
